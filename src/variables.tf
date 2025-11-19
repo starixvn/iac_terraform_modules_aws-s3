@@ -22,6 +22,12 @@ variable "attach_access_log_delivery_policy" {
   default     = false
 }
 
+variable "attach_cloudtrail_log_delivery_policy" {
+  description = "Controls if S3 bucket should have CloudTrail log delivery policy attached"
+  type        = bool
+  default     = false
+}
+
 variable "attach_deny_insecure_transport_policy" {
   description = "Controls if S3 bucket should have deny non-SSL transport policy attached"
   type        = bool
@@ -80,6 +86,24 @@ variable "attach_deny_unencrypted_object_uploads" {
   description = "Controls if S3 bucket should deny unencrypted object uploads policy attached."
   type        = bool
   default     = false
+}
+
+variable "attach_deny_ssec_encrypted_object_uploads" {
+  description = "Controls if S3 bucket should deny SSEC encrypted object uploads."
+  type        = bool
+  default     = false
+}
+
+variable "attach_waf_log_delivery_policy" {
+  description = "Controls if S3 bucket should have WAF log delivery policy attached"
+  type        = bool
+  default     = false
+}
+
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the region set in the provider configuration"
+  type        = string
+  default     = null
 }
 
 variable "bucket" {
@@ -150,18 +174,30 @@ variable "versioning" {
 
 variable "logging" {
   description = "Map containing access bucket logging configuration."
-  type        = map(string)
+  type        = any
   default     = {}
 }
 
 variable "access_log_delivery_policy_source_buckets" {
-  description = "(Optional) List of S3 bucket ARNs wich should be allowed to deliver access logs to this bucket."
+  description = "(Optional) List of S3 bucket ARNs which should be allowed to deliver access logs to this bucket."
   type        = list(string)
   default     = []
 }
 
 variable "access_log_delivery_policy_source_accounts" {
   description = "(Optional) List of AWS Account IDs should be allowed to deliver access logs to this bucket."
+  type        = list(string)
+  default     = []
+}
+
+variable "access_log_delivery_policy_source_organizations" {
+  description = "(Optional) List of AWS Organization IDs should be allowed to deliver access logs to this bucket."
+  type        = list(string)
+  default     = []
+}
+
+variable "lb_log_delivery_policy_source_organizations" {
+  description = "(Optional) List of AWS Organization IDs should be allowed to deliver ALB/NLB logs to this bucket."
   type        = list(string)
   default     = []
 }
@@ -180,6 +216,12 @@ variable "owner" {
 
 variable "expected_bucket_owner" {
   description = "The account ID of the expected bucket owner"
+  type        = string
+  default     = null
+}
+
+variable "transition_default_minimum_object_size" {
+  description = "The default minimum object size behavior applied to the lifecycle configuration. Valid values: all_storage_classes_128K (default), varies_by_storage_class"
   type        = string
   default     = null
 }
@@ -286,6 +328,12 @@ variable "block_public_policy" {
   default     = true
 }
 
+variable "skip_destroy_public_access_block" {
+  description = "Whether to skip destroying the S3 Bucket Public Access Block configuration when destroying the bucket. Only used if `public_access_block` is set to true."
+  type        = bool
+  default     = true
+}
+
 variable "ignore_public_acls" {
   description = "Whether Amazon S3 should ignore public ACLs for this bucket."
   type        = bool
@@ -308,6 +356,67 @@ variable "object_ownership" {
   description = "Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. 'BucketOwnerEnforced': ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. 'BucketOwnerPreferred': Objects uploaded to the bucket change ownership to the bucket owner if the objects are uploaded with the bucket-owner-full-control canned ACL. 'ObjectWriter': The uploading account will own the object if the object is uploaded with the bucket-owner-full-control canned ACL."
   type        = string
   default     = "BucketOwnerEnforced"
+}
+
+# Directory Bucket
+variable "is_directory_bucket" {
+  description = "If the s3 bucket created is a directory bucket"
+  type        = bool
+  default     = false
+}
+
+variable "data_redundancy" {
+  description = "Data redundancy. Valid values: `SingleAvailabilityZone`"
+  type        = string
+  default     = null
+}
+
+variable "type" {
+  description = "Bucket type. Valid values: `Directory`"
+  type        = string
+  default     = "Directory"
+}
+
+variable "availability_zone_id" {
+  description = "Availability Zone ID or Local Zone ID"
+  type        = string
+  default     = null
+}
+
+variable "location_type" {
+  description = "Location type. Valid values: `AvailabilityZone` or `LocalZone`"
+  type        = string
+  default     = null
+}
+
+variable "create_metadata_configuration" {
+  description = "Whether to create metadata configuration resource"
+  type        = bool
+  default     = false
+}
+
+variable "metadata_inventory_table_configuration_state" {
+  description = "Configuration state of the inventory table, indicating whether the inventory table is enabled or disabled. Valid values: ENABLED, DISABLED"
+  type        = string
+  default     = null
+}
+
+variable "metadata_encryption_configuration" {
+  description = "Encryption configuration block"
+  type        = any
+  default     = null
+}
+
+variable "metadata_journal_table_record_expiration_days" {
+  description = "Number of days to retain journal table records"
+  type        = number
+  default     = null
+}
+
+variable "metadata_journal_table_record_expiration" {
+  description = "Whether journal table record expiration is enabled or disabled. Valid values: ENABLED, DISABLED"
+  type        = string
+  default     = null
 }
 
 variable "putin_khuylo" {

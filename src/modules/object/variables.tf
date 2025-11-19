@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 variable "bucket" {
   description = "The name of the bucket to put the file in. Alternatively, an S3 access point ARN can be specified."
   type        = string
@@ -146,4 +152,10 @@ variable "source_hash" {
   description = "Triggers updates like etag but useful to address etag encryption limitations. Set using filemd5(\"path/to/source\") (Terraform 0.11.12 or later). (The value is only stored in state and not saved by AWS.)"
   type        = string
   default     = null
+}
+
+variable "override_default_tags" {
+  description = "Ignore provider default_tags. S3 objects support a maximum of 10 tags."
+  type        = bool
+  default     = false
 }
